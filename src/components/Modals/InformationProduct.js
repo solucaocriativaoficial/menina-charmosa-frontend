@@ -6,7 +6,7 @@ export default function InformationProduct({product}){
     if(product === null)
     return(<></>)
 
-    const {id, product_name, price, describe, image} = product;
+    const {product_name, price, describe, image} = product;
     return(
         <div className="modal-information-product">
             <div className="content-modal">
