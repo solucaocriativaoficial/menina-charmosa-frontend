@@ -11,15 +11,16 @@
     --cor-secundary: rgb(31,31,31);
     --cor-border: rgb(202, 202, 202);
     --cor-white: #fff;
-    --cor-transparent: rgba(0,0,0,0.6)
+    --cor-transparent: rgba(0,0,0,0.6);
+    --cor-shadow: rgba(0,0,0,0.4);
 }
 body{
     font-size: 12px;
-    overflow-x: hidden;
 }
 a{
     text-decoration: none;
-    color:var(--cor-primary)
+    color:var(--cor-primary);
+    cursor: pointer;
 }
 input, button, textarea, select{
     outline: none;
@@ -65,6 +66,7 @@ input, button, textarea, select{
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 #box-field-search-cart #input-search{
     display: flex;
@@ -84,8 +86,51 @@ input, button, textarea, select{
     border: none;
     outline: none;
     width: 95%;
+    color: var(--cor-white);
 }
 #box-field-search-cart img{height: 20px;}
+
+.search-results{
+    position: absolute;
+    top: 40px;
+    opacity: 0;
+    background: var(--cor-white);
+    box-shadow: 2px 2px 10px var(--cor-shadow);
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+}
+.search-results-moviment{
+    animation: searchResultsMoviment .25s ease-in-out forwards;
+}
+@keyframes searchResultsMoviment{
+    0%{
+        top: 40px;
+        opacity: 0;
+        overflow: visible;
+        height: 0;
+    }
+    100%{
+        height: auto;
+        max-height: 400px;
+        opacity: 1;
+        top: 60px;
+        overflow: visible;
+    }
+}
+.search-results .search-results-content{
+    margin: 10px 20px;
+    color: var(--cor-secundary);
+    height: 40px;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
 #box-menu-links{
     display: flex;
     align-items: center;
@@ -102,7 +147,22 @@ input, button, textarea, select{
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;   
+    height: 100%;
+    position: relative;  
+}
+#box-menu-links #cart a div{
+    background: var(--cor-white);
+    height: 20px;
+    width: auto;
+    min-width: 20px;
+    padding: 5px;
+    border-radius: 50px;
+    position: absolute;
+    top: 7px;
+    right: 1px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
 }
 #box-menu-links #cart a img{
     height: 70%;
@@ -139,6 +199,19 @@ input, button, textarea, select{
 }
 .box-menu-nav-moviment {
     animation: showMenu 0.25s ease-in-out forwards;
+}
+.footer-main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cor-secundary);
+    margin-top: 100px;
+    height: 100px;
+    color: var(--cor-white);
+    font-size: 1.3em;
+}
+.footer-main .container{
+    font-weight: normal;
 }
 @keyframes showMenu{
     0%{
@@ -272,7 +345,7 @@ input, button, textarea, select{
     grid-template-columns: 1fr 1fr 1fr 1fr;
     height: 100%;
 }
-.content{
+.control-content .content{
     display: grid;
     grid-template-rows: 1fr 1fr;
     min-width: 150px;
@@ -330,23 +403,27 @@ input, button, textarea, select{
 .modal-information-product{
     display: flex;
     justify-content: center;
-    align-items: center;
     width: 100%;
     height: 100vh;
     min-width: 300px;
     background: var(--cor-transparent);
     position: fixed;
-    top: 10px;
+    top: 50px;
+    padding-top: 20px;
 }
 .content-modal{
-    width: 550px;
-    height: auto;
-    min-height: 500px;
+    width: 100%;
+    max-width: 1280px;
+    height: calc(100vh - 100px);
     border-radius: 20px;
     background: var(--cor-white);
     padding: 30px;
     position: relative;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
+.content-modal::-webkit-scrollbar{width: 3px;}
+.content-modal::-webkit-scrollbar-track{width: 3px}
 .close-box-information-product{
     display: flex;
     align-items: center;
@@ -361,40 +438,82 @@ input, button, textarea, select{
     font-size: 25px;
     font-weight: normal;
     position: absolute;
-    top:-10px;
-    right: -10px;
+    top:5px;
+    right: 5px;
     cursor: pointer;
+    box-shadow: -5px 5px 6px var(--cor-shadow);
 }
 .close-box-information-product img{
     height: 40%;
 }
-
-.boxInformationProduct{
-    display: grid;
-    grid-template-columns: 1fr;
-}
-.boxInformationProduct .content{
+.modal-product .content{
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
     border: none;
     border-bottom: 1px solid var(--cor-border);
     border-radius: 0px;
-    height: 400px;
+    height: auto;
 }
-
-.boxInformationProduct .content .content-image{
-    height: 100%;
+.modal-product .content .content-image{
+    height: 300px;
+    margin-bottom: 30px;
+}
+.modal-product .content-describe{
+    display: block;
+    margin: 2px 0px;
+}
+.modal-product .content-title{
+    font-size: 1.3em;
+}
+.modal-product .content-more-information{
+    font-weight: normal;
+    font-size: 1em;
+    color: var(--cor-secundary);
+    margin-top: 20px;
+}
+.modal-product .content-price-btnPurchase{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--cor-primary);
+    margin-top: 50px;
+    border-top: 1px solid var(--cor-border);
 }
 .comments{
+    display: block;
     width: 100%;
     height: auto;
     min-height: 50px;
     color: var(--cor-secundary)
 }
 .comments h2{
-    margin-bottom: 30px;
+    margin: 30px 0;
 }
+.comments .add-comment{
+    display: grid;
+    grid-template-columns: 1fr .2fr;
+    height: auto;
+    margin-bottom: 20px;
+}
+.comments .add-comment input, .comments .add-comment button{
+    border-radius: 50px;
+}
+.comments .add-comment input{
+    border: 2px solid var(--cor-border);
+    margin-right: 10px;
+    color: var(--cor-secundary);
+    transition: .25s ease-in-out;
+}
+.comments .add-comment input:focus{
+    color: var(--cor-primary);
+    border-color: var(--cor-primary);
+}
+.comments .add-comment button{
+    border: 2px solid var(--cor-primary);
+    color: var(--cor-primary);
+    cursor: pointer;
+}
+
 .comments .comment{
     margin: 10px 0px 20px 0px;
 }
@@ -403,12 +522,27 @@ input, button, textarea, select{
     color: var(--cor-primary);
     margin-bottom: 6px;
 }
-
+.comments .comment div:nth-child(2){
+    margin-bottom: 8px;
+}
+.modal-information-auth{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    min-width: 300px;
+    background: var(--cor-transparent);
+    position: fixed;
+    top: 50px;
+    padding-top: 0px;
+}
+.modal-information-auth .content-modal{
+    height: 450px;
+}
 .auth{
     padding: 20px;
     width: 350px;
     margin: auto;
-    margin-top: 150px;
     border: 1px solid var(--cor-border);
     border-radius: 10px;
 }
@@ -422,6 +556,26 @@ input, button, textarea, select{
     margin: 20px 0px;
     width: 100%;
 }
+.auth button.btn-close-modal{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cor-primary);
+    color: var(--cor-white);
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    outline: none;
+    border: none;
+    font-size: 25px;
+    font-weight: normal;
+    position: absolute;
+    top:5px;
+    right: 5px;
+    cursor: pointer;
+    box-shadow: -5px 5px 6px var(--cor-shadow);
+}
+.auth button.btn-close-modal img{height: 40%;}
 .auth-field label{
     margin-bottom: 15px;
     font-size: 1.2em;
@@ -439,6 +593,56 @@ input, button, textarea, select{
     font-weight: normal;
     width: 100%;
     cursor: pointer;
+    margin-bottom: 15px;
+}
+.box-container{
+    display: block;
+}
+.box-container .control-content{
+    display: flex;
+    width: 100vw;
+    max-width: 1280px;
+    height: 400px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+.box-container .content{
+    width: 200px;
+    min-width: 200px;
+}
+.total_price_account{
+    width: 100%;
+    /* background: blue; */
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid var(--cor-border);
+    display: grid;
+    grid-template-columns: 1fr;
+}
+.total_price_account div{
+    width: 130px;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+    margin-bottom: 20px;
+    font-size: 1.7em;
+}
+.total_price_account div span:nth-child(2){
+    color: var(--cor-primary);
+}
+#price_all{
+    margin-left: 5px;
+}
+.total_price_account button{
+    width: 300px;
+    border: 2px solid var(--cor-primary);
+    outline: none;
+    border-radius: 50px;
+    color: var(--cor-primary);
+    cursor: pointer;
+    margin: auto;
 }
 @media(max-width: 1000px){
     .filter-fields{
