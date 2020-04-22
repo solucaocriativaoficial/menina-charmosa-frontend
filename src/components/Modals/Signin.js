@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {useHistory} from 'react-router-dom';
 import Api from '../../services/api';
 import { Form } from '@unform/web';
 import Input from '../forms/Input';
@@ -10,11 +9,12 @@ import imageclose from '../../assets/icon-close.svg';
 export default function SignIn({onCloseModalSignIn = () => {}}){
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
-    const History = useHistory();
+    const [register, setRegister] = useState(false);
 
     const checkSignin = async (data) => {
         try {
-            const authenticate = await Api.post("/signin", data);
+            const url = register ? "/registration" : "/signin";
+            const authenticate = await Api.post(url, data);
             const {success, content, message: messageResponse} = authenticate.data;
             if(success)
             {
@@ -35,7 +35,7 @@ export default function SignIn({onCloseModalSignIn = () => {}}){
         else{
             setLoading(true);
             await checkSignin(data);
-            History.goBack();
+            onCloseModalSignIn()
         }
     }
     return(
@@ -44,8 +44,17 @@ export default function SignIn({onCloseModalSignIn = () => {}}){
                 <button className="btn-close-modal" onClick={() => onCloseModalSignIn()}>
                     <img src={imageclose} alt="Botão de fechar"/>
                 </button>
-                <h1>Faça seu login</h1>
+                <h1>Faça seu {register ? "Cadastro" : "login"}</h1>
                 <Form onSubmit={handleSubmit}>
+                    {
+                        !register ? null :
+                        <div className="auth-field">
+                            <label htmlFor="person_name">
+                                Nome completo
+                            </label>
+                            <Input type="text" name="person_name" id="person_name" maxLength="200"/>
+                        </div>
+                    }
                     <div className="auth-field">
                         <label htmlFor="mail">
                             E-mail
@@ -61,7 +70,9 @@ export default function SignIn({onCloseModalSignIn = () => {}}){
                     <div>{message}</div>
                     <button type="submit">{loading ? "Carregando!" : "Entrar"}</button>
                 </Form>
-                <button>Cadastrar-se</button>
+                <button onClick={() => {
+                    setRegister(true)
+                }}>{register ? "Tenho uma conta" : "Cadastrar-se"}</button>
             </section>
         </div>
     )
