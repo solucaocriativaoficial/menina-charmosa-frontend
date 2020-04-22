@@ -35,7 +35,8 @@ export default function SignIn({onCloseModalSignIn = () => {}}){
         else{
             setLoading(true);
             await checkSignin(data);
-            onCloseModalSignIn()
+            onCloseModalSignIn();
+            window.location.reload()
         }
     }
     return(
