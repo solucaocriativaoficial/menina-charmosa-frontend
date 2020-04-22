@@ -1,24 +1,25 @@
 import React,{ useEffect, useState } from 'react';
-import {useHistory} from 'react-router-dom';
+import {useHistory, useParams} from 'react-router-dom';
 import Header from '../components/Header';
 import Api from '../services/api';
-import Api from '../services/header';
-import insertBox from '../components/box/InsertBox';
-import icon_arrow_right from '../assets/icon-arrow-right.svg';
 import {getToken} from '../components/Authenticate';
+import Footer from '../components/Footer';
+import InformationProduct from '../components/Modals/InformationProduct';
 import '../styles/Main.css';
 
 export default function Home(){
-    const [openFilterMenu, setOpenFilterMenu] = useState('')
     const [data, setData] = useState([]);
     const [message, setMessage] = useState("Carregando dados!");
-    const [mensageBox, setMessageBox] = useState();
     const History = useHistory();
+    const {search = ''} = useParams();
+    const [openModal, setOpenModal] = useState(false);
+    const [dataModalProduct, setDataModalProduct] = useState(null);
 
     useEffect(() => {
         try {
             async function  getProduct (){
-                const reqData = await Api.get('/shopping/product/');
+                let filter = search === '' ? '' : `?search=${search}`;
+                const reqData = await Api.get(`/shopping/product/${filter}`);
                 const {success, content, message} = reqData.data;
                 if(success)
                 setData(content)
@@ -30,53 +31,19 @@ export default function Home(){
         } catch (error) {
             setMessage(error.response.data.message)
         }
-    }, [])
-
-    useEffect(() => {
-        const separatorElementsToBox = ({id, price, ...rest}) => {
-            const date = new Date();
-            const today = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`
-        
-            return {
-                product: id,
-                box_add_at: today,
-                number_of_product: 1,
-                price_all_product: price
-            }
-        }
-
-        async function storage(){
-            try {
-                const data = separatorElementsToBox(product)
-                const responseBox = await Api.post("/box/add/", data, HeaderApi);
-                const {success, message: messageResponse} = responseBox.data
-                if(success)
-                setMessageBox(messageResponse);
-            } catch (error) {
-                setMessageBox(error.response.data.message);
-            }
-        }
-        storage()
-    }, [])
+    }, [search])
 
     const addProductBox = (product) => {
         if(getToken() === null)
         History.push('/signin');
 
         else
-        {
-            
-        }
+        History.push(`/box/${product.id}/${product.price}`)
     }
 
-    function openFilter(){
-        if(openFilterMenu === '')
-        {
-            setOpenFilterMenu('open-filter-fields')
-        }
-        else{
-            setOpenFilterMenu('')
-        }
+    const openModalBox = (product) => {
+        setDataModalProduct(product);
+        setOpenModal(true);
     }
     return(
         <>
@@ -86,10 +53,6 @@ export default function Home(){
                 <div className="title-pages">
                     Tudo para você, linda e maravilhosa!
                 </div>
-                <button className="btn-filter" onClick={openFilter}>
-                    <img src={icon_arrow_right} alt=""/>
-                    <div>Filtro</div>
-                </button>
             </section>
             <section className="boxContent">
                 <div className="control-content">
@@ -105,7 +68,7 @@ export default function Home(){
                                         {product.product_name}
                                     </div>
                                     <div className="content-more-information" onClick={() => {
-                                        History.push(`/product/${product.id}/information/`)
+                                        openModalBox(product)
                                     }}>
                                         + informação
                                     </div>
@@ -121,13 +84,13 @@ export default function Home(){
                         ))
                     }
                 </div>
-                <div className={`filter-fields ${openFilterMenu}`}>
-                    <div className="filter-fields-content">
-                        <h3>Selecione o tipo de filtro</h3>
-                    </div>
-                </div>
             </section>
         </div>
+        {
+            !openModal ? null : 
+            <InformationProduct onCloseModal={() => setOpenModal(false)} product={dataModalProduct}/>
+        }
+        <Footer/>
         </>
     )
 }
